@@ -6,9 +6,31 @@
     <title>FOSDEM 2026 Schedule</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #252540;
+            --bg-card: #252540;
+            --text-primary: #e0e0e0;
+            --text-secondary: #aaa;
+            --text-muted: #888;
+            --accent: #667eea;
+            --border: #2a2a4a;
+        }
+        .light-theme {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e8e8ed;
+            --bg-card: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #555;
+            --text-muted: #888;
+            --accent: #667eea;
+            --border: #d2d2d7;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f0f1a; color: #e0e0e0; line-height: 1.4;
+            background: var(--bg-primary); color: var(--text-primary); line-height: 1.4;
             -webkit-text-size-adjust: 100%;
         }
         .header {
@@ -16,6 +38,12 @@
             padding: 16px 15px; text-align: center; position: sticky; top: 0; z-index: 100;
         }
         .header h1 { font-size: 1.3rem; margin-bottom: 8px; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .theme-toggle {
+            background: rgba(255,255,255,0.2); border: none; border-radius: 50%;
+            width: 36px; height: 36px; font-size: 18px; cursor: pointer;
+            touch-action: manipulation; color: white;
+        }
         .tabs { display: flex; gap: 8px; justify-content: center; }
         .tab {
             padding: 10px 24px; border-radius: 20px; border: none;
@@ -24,31 +52,31 @@
         }
         .tab.active { background: white; color: #764ba2; font-weight: 600; }
         .filters {
-            padding: 12px; background: #1a1a2e; border-bottom: 1px solid #2a2a4a;
+            padding: 12px; background: var(--bg-secondary); border-bottom: 1px solid var(--border);
         }
         .search-box {
             width: 100%; padding: 14px 16px; border-radius: 10px; border: none;
-            background: #252540; color: white; font-size: 16px; margin-bottom: 10px;
+            background: var(--bg-tertiary); color: var(--text-primary); font-size: 16px; margin-bottom: 10px;
         }
-        .search-box::placeholder { color: #888; }
+        .search-box::placeholder { color: var(--text-muted); }
         .track-filter {
             width: 100%; padding: 14px 16px; border-radius: 10px; border: none;
-            background: #252540; color: white; font-size: 16px;
+            background: var(--bg-tertiary); color: var(--text-primary); font-size: 16px;
             appearance: none; -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right 16px center;
         }
         .content { padding: 8px; }
         .time-group {
-            margin-bottom: 12px; background: #1a1a2e; border-radius: 12px;
+            margin-bottom: 12px; background: var(--bg-secondary); border-radius: 12px;
             overflow: hidden;
         }
         .time-header {
-            padding: 14px 16px; background: #252540;
+            padding: 14px 16px; background: var(--bg-tertiary);
             display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; touch-action: manipulation; user-select: none;
         }
-        .time-header:active { background: #303050; }
+        .time-header:active { background: var(--bg-card); }
         .time-label { font-size: 1.1rem; font-weight: 600; color: #667eea; }
         .event-count {
             background: #667eea; color: white; padding: 4px 12px;
@@ -56,34 +84,34 @@
         }
         .expand-icon {
             display: inline-block; transition: transform 0.2s;
-            font-size: 12px; color: #888;
+            font-size: 12px; color: var(--text-muted);
         }
         .time-header.expanded .expand-icon { transform: rotate(180deg); }
         .time-events { display: none; padding: 8px; }
         .time-events.expanded { display: block; }
         .event-card {
-            background: #252540; border-radius: 10px; padding: 14px;
+            background: var(--bg-card); border-radius: 10px; padding: 14px;
             margin-bottom: 8px; border-left: 4px solid #667eea;
             position: relative;
         }
-        .event-card.favorite-event { border-left-color: #f0c040; background: #2a2a45; }
-        .event-card.favorite { border-left-color: #f0c040; background: #2a2a45; }
+        .event-card.favorite-event { border-left-color: #f0c040; background: var(--bg-tertiary); }
+        .event-card.favorite { border-left-color: #f0c040; background: var(--bg-tertiary); }
         .event-card:last-child { margin-bottom: 0; }
         .event-fav-btn {
             position: absolute; top: 10px; right: 10px;
             background: none; border: none; font-size: 20px;
-            cursor: pointer; touch-action: manipulation; color: #555;
+            cursor: pointer; touch-action: manipulation; color: var(--text-muted);
             padding: 4px;
         }
         .event-fav-btn.active { color: #f0c040; }
         .event-title {
-            font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; color: #fff;
+            font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; color: var(--text-primary);
             padding-right: 30px;
         }
-        .event-speakers { font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
-        .event-meta { font-size: 0.8rem; color: #888; display: flex; flex-wrap: wrap; gap: 6px; }
+        .event-speakers { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
+        .event-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 6px; }
         .event-meta .tag {
-            display: inline-block; background: #3a3a5a; padding: 3px 8px;
+            display: inline-block; background: var(--bg-tertiary); padding: 3px 8px;
             border-radius: 4px; font-size: 0.75rem;
         }
         .event-meta .track { background: #4a3a6a; color: #c9b8ea; }
@@ -92,15 +120,15 @@
         .event-meta .time { background: #3a5a4a; color: #b8eac9; }
         .hidden { display: none !important; }
         .no-results {
-            text-align: center; padding: 40px 20px; color: #666;
+            text-align: center; padding: 40px 20px; color: var(--text-muted);
         }
         .stats {
-            text-align: center; padding: 8px; font-size: 12px; color: #666;
+            text-align: center; padding: 8px; font-size: 12px; color: var(--text-muted);
         }
         .track-filter-container { display: flex; gap: 10px; align-items: center; }
         .track-filter { flex: 1; }
         .favorite-toggle {
-            background: #252540; border: none; font-size: 24px; cursor: pointer;
+            background: var(--bg-tertiary); border: none; font-size: 24px; cursor: pointer;
             padding: 10px 14px; touch-action: manipulation; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
         }
@@ -111,7 +139,11 @@
 </head>
 <body>
     <div class="header">
-        <h1>FOSDEM 2026</h1>
+        <div class="header-row">
+            <div style="width: 36px;"></div>
+            <h1>FOSDEM 2026</h1>
+            <button class="theme-toggle" id="themeToggle">☀️</button>
+        </div>
         <div class="tabs">
             <button class="tab active" id="tabSaturday">Saturday</button>
             <button class="tab" id="tabSunday">Sunday</button>
@@ -12422,6 +12454,18 @@
         let showFavoritesOnly = false;
         let favoriteTracks = JSON.parse(localStorage.getItem('fosdemFavTracks') || '[]');
         let favoriteEvents = JSON.parse(localStorage.getItem('fosdemFavEvents') || '[]');
+        let darkTheme = localStorage.getItem('fosdemTheme') !== 'light';
+
+        function applyTheme() {
+            document.body.classList.toggle('light-theme', !darkTheme);
+            document.getElementById('themeToggle').textContent = darkTheme ? '☀️' : '🌙';
+        }
+
+        function toggleTheme() {
+            darkTheme = !darkTheme;
+            localStorage.setItem('fosdemTheme', darkTheme ? 'dark' : 'light');
+            applyTheme();
+        }
 
         function saveFavorites() {
             localStorage.setItem('fosdemFavTracks', JSON.stringify(favoriteTracks));
@@ -12582,6 +12626,7 @@
         }
 
         // Event listeners
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         document.getElementById('tabSaturday').addEventListener('click', function() { showDay('Saturday'); });
         document.getElementById('tabSunday').addEventListener('click', function() { showDay('Sunday'); });
         document.getElementById('tabFavorites').addEventListener('click', showFavorites);
@@ -12612,6 +12657,7 @@
         });
 
         // Initialize
+        applyTheme();
         applyFavoriteStyles();
         applyEventFavoriteStyles();
         updateFavButton();

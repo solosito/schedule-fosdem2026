@@ -58,6 +58,13 @@
         }
         .copy-btn:active { background: rgba(255,255,255,0.4); }
         .copy-btn.copied { background: #4caf50; }
+        .action-btn {
+            padding: 6px 12px; border-radius: 14px; border: none;
+            background: rgba(255,255,255,0.2); color: white; font-size: 13px;
+            cursor: pointer; transition: all 0.2s; touch-action: manipulation;
+        }
+        .action-btn:active { background: rgba(255,255,255,0.4); }
+        .action-btn.copied { background: #4caf50; }
         .filters {
             padding: 12px; background: var(--bg-secondary); border-bottom: 1px solid var(--border);
         }
@@ -186,7 +193,11 @@
             <button class="tab active" id="tabSaturday">Saturday</button>
             <button class="tab" id="tabSunday">Sunday</button>
             <button class="tab" id="tabFavorites">★ Favs</button>
-            <button class="copy-btn" id="copyFavs" title="Copy favorites to clipboard">📋</button>
+        </div>
+        <div class="tabs" style="margin-top: 8px;">
+            <button class="action-btn" id="copyFavs" title="Copy favorites to clipboard">Export favs</button>
+            <button class="action-btn" id="expandAll" title="Expand all">Expand</button>
+            <button class="action-btn" id="collapseAll" title="Collapse all">Collapse</button>
         </div>
     </div>
 
@@ -12847,14 +12858,46 @@
 
             navigator.clipboard.writeText(text).then(() => {
                 const btn = document.getElementById('copyFavs');
-                btn.textContent = '✓';
+                btn.textContent = 'Copied to clipboard';
                 btn.classList.add('copied');
                 setTimeout(() => {
-                    btn.textContent = '📋';
+                    btn.textContent = 'Export favs';
                     btn.classList.remove('copied');
                 }, 2000);
             }).catch(err => {
                 alert('Failed to copy: ' + err);
+            });
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.hour-group:not(.hidden)').forEach(group => {
+                const content = group.querySelector('.hour-content');
+                const header = group.querySelector('.hour-header');
+                if (content && !content.classList.contains('expanded')) {
+                    content.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            });
+            document.querySelectorAll('.time-group:not(.hidden)').forEach(group => {
+                const content = group.querySelector('.time-events');
+                const header = group.querySelector('.time-header');
+                if (content && !content.classList.contains('expanded')) {
+                    content.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            });
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.hour-content.expanded').forEach(content => {
+                content.classList.remove('expanded');
+                const header = content.previousElementSibling;
+                if (header) header.classList.remove('expanded');
+            });
+            document.querySelectorAll('.time-events.expanded').forEach(content => {
+                content.classList.remove('expanded');
+                const header = content.previousElementSibling;
+                if (header) header.classList.remove('expanded');
             });
         }
 
@@ -12968,6 +13011,8 @@
         document.getElementById('tabSunday').addEventListener('click', function() { showDay('Sunday'); });
         document.getElementById('tabFavorites').addEventListener('click', showFavorites);
         document.getElementById('copyFavs').addEventListener('click', copyFavoritesToClipboard);
+        document.getElementById('expandAll').addEventListener('click', expandAll);
+        document.getElementById('collapseAll').addEventListener('click', collapseAll);
         document.getElementById('search').addEventListener('input', filterEvents);
         document.getElementById('trackFilter').addEventListener('change', function() {
             updateFavButton();

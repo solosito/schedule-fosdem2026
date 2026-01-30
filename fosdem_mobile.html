@@ -65,6 +65,7 @@
             background: #252540; border-radius: 10px; padding: 14px;
             margin-bottom: 8px; border-left: 4px solid #667eea;
         }
+        .event-card.favorite { border-left-color: #f0c040; background: #2a2a45; }
         .event-card:last-child { margin-bottom: 0; }
         .event-title {
             font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; color: #fff;
@@ -76,6 +77,7 @@
             border-radius: 4px; font-size: 0.75rem;
         }
         .event-meta .track { background: #4a3a6a; color: #c9b8ea; }
+        .event-meta .track.favorite { background: #6a5a2a; color: #f0c040; }
         .event-meta .room { background: #3a4a5a; color: #b8d4ea; }
         .event-meta .time { background: #3a5a4a; color: #b8eac9; }
         .hidden { display: none !important; }
@@ -85,6 +87,16 @@
         .stats {
             text-align: center; padding: 8px; font-size: 12px; color: #666;
         }
+        .track-filter-container { display: flex; gap: 10px; align-items: center; }
+        .track-filter { flex: 1; }
+        .favorite-toggle {
+            background: #252540; border: none; font-size: 24px; cursor: pointer;
+            padding: 10px 14px; touch-action: manipulation; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .favorite-toggle.active { color: #f0c040; }
+        .favorite-toggle:not(.active) { color: #555; }
+        .favorite-toggle.hidden { display: none; }
     </style>
 </head>
 <body>
@@ -98,80 +110,84 @@
 
     <div class="filters">
         <input type="text" class="search-box" id="search" placeholder="Search events or speakers...">
-        <select class="track-filter" id="trackFilter">
-            <option value="">All Tracks</option>
-            <option value="/dev/random">/dev/random</option>
-            <option value="AI Plumbers">AI Plumbers</option>
-            <option value="Audio, Video & Graphics Creation">Audio, Video & Graphics Creation</option>
-            <option value="BOF/Unconference">BOF/Unconference</option>
-            <option value="BSD, illumos, bhyve, OpenZFS">BSD, illumos, bhyve, OpenZFS</option>
-            <option value="Bioinformatics & Computational Biology">Bioinformatics & Computational Biology</option>
-            <option value="Browser and web platform">Browser and web platform</option>
-            <option value="Building Europe’s Public Digital Infrastructure">Building Europe’s Public Digital Infrastructure</option>
-            <option value="CRA in practice">CRA in practice</option>
-            <option value="Collaboration and content management">Collaboration and content management</option>
-            <option value="Community">Community</option>
-            <option value="Confidential Computing">Confidential Computing</option>
-            <option value="Containers">Containers</option>
-            <option value="DNS">DNS</option>
-            <option value="Databases">Databases</option>
-            <option value="Decentralised Communication">Decentralised Communication</option>
-            <option value="Decentralized Internet and Privacy">Decentralized Internet and Privacy</option>
-            <option value="Declarative and Minimalistic Computing">Declarative and Minimalistic Computing</option>
-            <option value="Distributions">Distributions</option>
-            <option value="Educational">Educational</option>
-            <option value="Embedded, Mobile and Automotive">Embedded, Mobile and Automotive</option>
-            <option value="Energy">Energy</option>
-            <option value="FOSS on Mobile">FOSS on Mobile</option>
-            <option value="FPGA and VLSI">FPGA and VLSI</option>
-            <option value="Funding the FOSS Ecosystem">Funding the FOSS Ecosystem</option>
-            <option value="GCC (GNU Toolchain)">GCC (GNU Toolchain)</option>
-            <option value="Gaming and VR devroom">Gaming and VR devroom</option>
-            <option value="Geospatial">Geospatial</option>
-            <option value="Go">Go</option>
-            <option value="Graphics">Graphics</option>
-            <option value="HPC, Big Data & Data Science">HPC, Big Data & Data Science</option>
-            <option value="Identity and Access Management">Identity and Access Management</option>
-            <option value="Junior">Junior</option>
-            <option value="Kernel">Kernel</option>
-            <option value="LLVM">LLVM</option>
-            <option value="Legal & Policy">Legal & Policy</option>
-            <option value="Local-First, sync engines, CRDTs">Local-First, sync engines, CRDTs</option>
-            <option value="Main Track">Main Track</option>
-            <option value="Main Track (K-building)">Main Track (K-building)</option>
-            <option value="Microkernel and Component-Based OS">Microkernel and Component-Based OS</option>
-            <option value="Modern Email">Modern Email</option>
-            <option value="Music Production">Music Production</option>
-            <option value="Network">Network</option>
-            <option value="Nix and NixOS">Nix and NixOS</option>
-            <option value="Open Hardware and CAD/CAM">Open Hardware and CAD/CAM</option>
-            <option value="Open Media devroom">Open Media devroom</option>
-            <option value="Open Research">Open Research</option>
-            <option value="Open Source & EU Policy">Open Source & EU Policy</option>
-            <option value="Open Source Design">Open Source Design</option>
-            <option value="Open Source Digital Forensics">Open Source Digital Forensics</option>
-            <option value="Package Management">Package Management</option>
-            <option value="Plan 9">Plan 9</option>
-            <option value="Python">Python</option>
-            <option value="RISC-V">RISC-V</option>
-            <option value="Railways and Open Transport">Railways and Open Transport</option>
-            <option value="Retrocomputing">Retrocomputing</option>
-            <option value="Robotics and Simulation">Robotics and Simulation</option>
-            <option value="Rust">Rust</option>
-            <option value="SBOMS and supply chains">SBOMS and supply chains</option>
-            <option value="Search">Search</option>
-            <option value="Security">Security</option>
-            <option value="Social Web">Social Web</option>
-            <option value="Software Defined Radio(SDR)/Digital Signal Processing(DSP)">Software Defined Radio(SDR)/Digital Signal Processing(DSP)</option>
-            <option value="Software Defined Storage">Software Defined Storage</option>
-            <option value="Software Performance">Software Performance</option>
-            <option value="Testing and Continuous Delivery">Testing and Continuous Delivery</option>
-            <option value="Tool the Docs">Tool the Docs</option>
-            <option value="Translations">Translations</option>
-            <option value="Virtualization and Cloud Infrastructure">Virtualization and Cloud Infrastructure</option>
-            <option value="Workshops">Workshops</option>
-            <option value="eBPF">eBPF</option>
-        </select>
+        <div class="track-filter-container">
+            <select class="track-filter" id="trackFilter">
+                <option value="">All Tracks</option>
+                <option value="__favorites__">⭐ Favorite Tracks Only</option>
+                <option value="/dev/random">/dev/random</option>
+                <option value="AI Plumbers">AI Plumbers</option>
+                <option value="Audio, Video & Graphics Creation">Audio, Video & Graphics Creation</option>
+                <option value="BOF/Unconference">BOF/Unconference</option>
+                <option value="BSD, illumos, bhyve, OpenZFS">BSD, illumos, bhyve, OpenZFS</option>
+                <option value="Bioinformatics & Computational Biology">Bioinformatics & Computational Biology</option>
+                <option value="Browser and web platform">Browser and web platform</option>
+                <option value="Building Europe’s Public Digital Infrastructure">Building Europe’s Public Digital Infrastructure</option>
+                <option value="CRA in practice">CRA in practice</option>
+                <option value="Collaboration and content management">Collaboration and content management</option>
+                <option value="Community">Community</option>
+                <option value="Confidential Computing">Confidential Computing</option>
+                <option value="Containers">Containers</option>
+                <option value="DNS">DNS</option>
+                <option value="Databases">Databases</option>
+                <option value="Decentralised Communication">Decentralised Communication</option>
+                <option value="Decentralized Internet and Privacy">Decentralized Internet and Privacy</option>
+                <option value="Declarative and Minimalistic Computing">Declarative and Minimalistic Computing</option>
+                <option value="Distributions">Distributions</option>
+                <option value="Educational">Educational</option>
+                <option value="Embedded, Mobile and Automotive">Embedded, Mobile and Automotive</option>
+                <option value="Energy">Energy</option>
+                <option value="FOSS on Mobile">FOSS on Mobile</option>
+                <option value="FPGA and VLSI">FPGA and VLSI</option>
+                <option value="Funding the FOSS Ecosystem">Funding the FOSS Ecosystem</option>
+                <option value="GCC (GNU Toolchain)">GCC (GNU Toolchain)</option>
+                <option value="Gaming and VR devroom">Gaming and VR devroom</option>
+                <option value="Geospatial">Geospatial</option>
+                <option value="Go">Go</option>
+                <option value="Graphics">Graphics</option>
+                <option value="HPC, Big Data & Data Science">HPC, Big Data & Data Science</option>
+                <option value="Identity and Access Management">Identity and Access Management</option>
+                <option value="Junior">Junior</option>
+                <option value="Kernel">Kernel</option>
+                <option value="LLVM">LLVM</option>
+                <option value="Legal & Policy">Legal & Policy</option>
+                <option value="Local-First, sync engines, CRDTs">Local-First, sync engines, CRDTs</option>
+                <option value="Main Track">Main Track</option>
+                <option value="Main Track (K-building)">Main Track (K-building)</option>
+                <option value="Microkernel and Component-Based OS">Microkernel and Component-Based OS</option>
+                <option value="Modern Email">Modern Email</option>
+                <option value="Music Production">Music Production</option>
+                <option value="Network">Network</option>
+                <option value="Nix and NixOS">Nix and NixOS</option>
+                <option value="Open Hardware and CAD/CAM">Open Hardware and CAD/CAM</option>
+                <option value="Open Media devroom">Open Media devroom</option>
+                <option value="Open Research">Open Research</option>
+                <option value="Open Source & EU Policy">Open Source & EU Policy</option>
+                <option value="Open Source Design">Open Source Design</option>
+                <option value="Open Source Digital Forensics">Open Source Digital Forensics</option>
+                <option value="Package Management">Package Management</option>
+                <option value="Plan 9">Plan 9</option>
+                <option value="Python">Python</option>
+                <option value="RISC-V">RISC-V</option>
+                <option value="Railways and Open Transport">Railways and Open Transport</option>
+                <option value="Retrocomputing">Retrocomputing</option>
+                <option value="Robotics and Simulation">Robotics and Simulation</option>
+                <option value="Rust">Rust</option>
+                <option value="SBOMS and supply chains">SBOMS and supply chains</option>
+                <option value="Search">Search</option>
+                <option value="Security">Security</option>
+                <option value="Social Web">Social Web</option>
+                <option value="Software Defined Radio(SDR)/Digital Signal Processing(DSP)">Software Defined Radio(SDR)/Digital Signal Processing(DSP)</option>
+                <option value="Software Defined Storage">Software Defined Storage</option>
+                <option value="Software Performance">Software Performance</option>
+                <option value="Testing and Continuous Delivery">Testing and Continuous Delivery</option>
+                <option value="Tool the Docs">Tool the Docs</option>
+                <option value="Translations">Translations</option>
+                <option value="Virtualization and Cloud Infrastructure">Virtualization and Cloud Infrastructure</option>
+                <option value="Workshops">Workshops</option>
+                <option value="eBPF">eBPF</option>
+            </select>
+            <button class="favorite-toggle" id="favToggle" title="Toggle favorite for selected track">☆</button>
+        </div>
     </div>
 
     <div class="stats" id="stats">Showing all events</div>
@@ -11326,6 +11342,51 @@
 
     <script>
         let currentDay = 'Saturday';
+        let favoriteTracks = JSON.parse(localStorage.getItem('fosdemFavTracks') || '[]');
+
+        function saveFavorites() {
+            localStorage.setItem('fosdemFavTracks', JSON.stringify(favoriteTracks));
+        }
+
+        function isFavorite(track) {
+            return favoriteTracks.includes(track);
+        }
+
+        function toggleFavorite(track) {
+            if (!track || track === '__favorites__') return;
+            const idx = favoriteTracks.indexOf(track);
+            if (idx >= 0) {
+                favoriteTracks.splice(idx, 1);
+            } else {
+                favoriteTracks.push(track);
+            }
+            saveFavorites();
+            applyFavoriteStyles();
+            updateFavButton();
+            filterEvents();
+        }
+
+        function applyFavoriteStyles() {
+            document.querySelectorAll('.event-card').forEach(card => {
+                const track = card.dataset.track;
+                card.classList.toggle('favorite', isFavorite(track));
+                const trackTag = card.querySelector('.tag.track');
+                if (trackTag) trackTag.classList.toggle('favorite', isFavorite(track));
+            });
+        }
+
+        function updateFavButton() {
+            const track = document.getElementById('trackFilter').value;
+            const btn = document.getElementById('favToggle');
+            if (!track || track === '__favorites__') {
+                btn.classList.add('hidden');
+            } else {
+                btn.classList.remove('hidden');
+                const fav = isFavorite(track);
+                btn.textContent = fav ? '★' : '☆';
+                btn.classList.toggle('active', fav);
+            }
+        }
 
         function showDay(day) {
             currentDay = day;
@@ -11343,7 +11404,8 @@
 
         function filterEvents() {
             const search = document.getElementById('search').value.toLowerCase();
-            const track = document.getElementById('trackFilter').value;
+            const trackFilter = document.getElementById('trackFilter').value;
+            const showFavoritesOnly = trackFilter === '__favorites__';
             let visibleEvents = 0;
             let visibleGroups = 0;
 
@@ -11356,8 +11418,15 @@
 
                 let groupVisibleCount = 0;
                 group.querySelectorAll('.event-card').forEach(card => {
+                    const cardTrack = card.dataset.track;
                     const matchesSearch = !search || card.dataset.search.includes(search);
-                    const matchesTrack = !track || card.dataset.track === track;
+                    let matchesTrack = true;
+
+                    if (showFavoritesOnly) {
+                        matchesTrack = isFavorite(cardTrack);
+                    } else if (trackFilter) {
+                        matchesTrack = cardTrack === trackFilter;
+                    }
 
                     if (matchesSearch && matchesTrack) {
                         card.classList.remove('hidden');
@@ -11387,7 +11456,14 @@
         document.getElementById('tabSaturday').addEventListener('click', function() { showDay('Saturday'); });
         document.getElementById('tabSunday').addEventListener('click', function() { showDay('Sunday'); });
         document.getElementById('search').addEventListener('input', filterEvents);
-        document.getElementById('trackFilter').addEventListener('change', filterEvents);
+        document.getElementById('trackFilter').addEventListener('change', function() {
+            updateFavButton();
+            filterEvents();
+        });
+        document.getElementById('favToggle').addEventListener('click', function() {
+            const track = document.getElementById('trackFilter').value;
+            toggleFavorite(track);
+        });
 
         // Touch-friendly header clicks
         document.querySelectorAll('.time-header').forEach(function(header) {
@@ -11398,6 +11474,8 @@
         });
 
         // Initialize
+        applyFavoriteStyles();
+        updateFavButton();
         showDay('Saturday');
     </script>
 </body>

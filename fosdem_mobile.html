@@ -180,6 +180,7 @@
         </div>
         <div class="tabs" style="margin-top: 8px;">
             <button class="action-btn" id="copyFavs" title="Copy favorites to clipboard">Export favs</button>
+            <button class="action-btn" id="exportIcs" title="Download as calendar file">Export ICS</button>
             <button class="action-btn" id="expandAll" title="Expand all">Expand</button>
             <button class="action-btn" id="collapseAll" title="Collapse all">Collapse</button>
         </div>
@@ -12720,6 +12721,85 @@
             });
         }
 
+        function exportIcs() {
+            const favCards = [];
+            document.querySelectorAll('.event-card').forEach(card => {
+                if (isEventFavorite(card.dataset.eventId)) {
+                    const titleEl = card.querySelector('.event-title');
+                    const title = titleEl ? titleEl.textContent.replace('CONFLICT', '').trim() : '';
+                    const speakersEl = card.querySelector('.event-speakers');
+                    const speakers = speakersEl ? speakersEl.textContent : '';
+                    const roomTag = card.querySelector('.tag.room');
+                    const room = roomTag ? roomTag.textContent : '';
+                    const trackTag = card.querySelector('.tag.track');
+                    const track = trackTag ? trackTag.textContent : '';
+                    favCards.push({
+                        title, speakers, room, track,
+                        day: card.dataset.day,
+                        start: card.dataset.start,
+                        end: card.dataset.end,
+                        eventId: card.dataset.eventId
+                    });
+                }
+            });
+
+            if (favCards.length === 0) {
+                alert('No favorite events to export');
+                return;
+            }
+
+            // FOSDEM 2026 dates: February 7 (Saturday) and 8 (Sunday)
+            const dates = { 'Saturday': '20260207', 'Sunday': '20260208' };
+
+            let ics = 'BEGIN:VCALENDAR\r\n';
+            ics += 'VERSION:2.0\r\n';
+            ics += 'PRODID:-//FOSDEM 2026//Schedule Viewer//EN\r\n';
+            ics += 'CALSCALE:GREGORIAN\r\n';
+            ics += 'METHOD:PUBLISH\r\n';
+            ics += 'X-WR-CALNAME:FOSDEM 2026 Favorites\r\n';
+            ics += 'X-WR-TIMEZONE:Europe/Brussels\r\n';
+
+            favCards.forEach(ev => {
+                const date = dates[ev.day] || '20260207';
+                const startTime = ev.start.replace(':', '') + '00';
+                const endTime = ev.end.replace(':', '') + '00';
+                const uid = 'fosdem2026-' + ev.eventId + '@fosdem.org';
+                const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+                ics += 'BEGIN:VEVENT\r\n';
+                ics += 'DTSTART;TZID=Europe/Brussels:' + date + 'T' + startTime + '\r\n';
+                ics += 'DTEND;TZID=Europe/Brussels:' + date + 'T' + endTime + '\r\n';
+                ics += 'DTSTAMP:' + now + '\r\n';
+                ics += 'UID:' + uid + '\r\n';
+                ics += 'SUMMARY:' + ev.title.replace(/[\\,;]/g, ' ') + '\r\n';
+                ics += 'LOCATION:' + ev.room.replace(/[\\,;]/g, ' ') + '\r\n';
+                let desc = 'Track: ' + ev.track;
+                if (ev.speakers) desc += '\\nSpeaker: ' + ev.speakers;
+                ics += 'DESCRIPTION:' + desc.replace(/[\\,;]/g, ' ') + '\r\n';
+                ics += 'END:VEVENT\r\n';
+            });
+
+            ics += 'END:VCALENDAR\r\n';
+
+            const blob = new Blob([ics.replace(/\\r\\n/g, '\r\n')], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fosdem2026-favorites.ics';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            const btn = document.getElementById('exportIcs');
+            btn.textContent = 'Downloaded!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = 'Export ICS';
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+
         function updateFavButton() {
             const track = document.getElementById('trackFilter').value;
             const btn = document.getElementById('favToggle');
@@ -12830,6 +12910,7 @@
         document.getElementById('tabSunday').addEventListener('click', function() { showDay('Sunday'); });
         document.getElementById('tabFavorites').addEventListener('click', showFavorites);
         document.getElementById('copyFavs').addEventListener('click', copyFavoritesToClipboard);
+        document.getElementById('exportIcs').addEventListener('click', exportIcs);
         document.getElementById('expandAll').addEventListener('click', expandAll);
         document.getElementById('collapseAll').addEventListener('click', collapseAll);
         document.getElementById('search').addEventListener('input', filterEvents);

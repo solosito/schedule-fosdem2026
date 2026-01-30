@@ -38,6 +38,10 @@
             padding: 16px 15px; text-align: center; position: sticky; top: 0; z-index: 100;
         }
         .header h1 { font-size: 1.3rem; margin-bottom: 8px; }
+        .map-btn {
+            text-decoration: none; font-size: 1.1rem; margin-left: 8px;
+            vertical-align: middle;
+        }
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .theme-toggle {
             background: rgba(255,255,255,0.2); border: none; border-radius: 50%;
@@ -166,7 +170,7 @@
     <div class="header">
         <div class="header-row">
             <div style="width: 36px;"></div>
-            <h1>FOSDEM 2026</h1>
+            <h1>FOSDEM 2026 <a href="https://fosdem.org/2026/schedule/buildings/" target="_blank" class="map-btn" title="Campus Map">🗺️</a></h1>
             <button class="theme-toggle" id="themeToggle">☀</button>
         </div>
         <div class="tabs">
